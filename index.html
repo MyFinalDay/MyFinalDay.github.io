@@ -1,1 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>colorTable</title>
+    <style>
+        .wrap {
+            margin: 0;
+        }
+
+        #tb {
+            margin: 20px 0;
+        }
+
+        .searchBox {
+            margin: 30px 0;
+        }
+
+        .resultBox {
+            color: aliceblue;
+            background: black;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #myDiv1,
+        #myDiv2 {
+            margin: 10px 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        tr:hover {
+            background-color: #fbfbfb;
+        }
+
+        td {
+            border: 1px solid #f5f5f5;
+            padding: 6px 4px;
+        }
+
+        td:hover {
+            border: 1px solid #fbfbfb;
+            padding: 30px 4px;
+            /* font-size: 20px; */
+        }
+
+        button {
+            background: #c3c3c3;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+        }
+
+        button:hover {
+            transition: all .2s;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12)
+        }
+
+        .toggleTransform {
+            width: 180px;
+            height: 60px;
+            background: #f8f8ff;
+            color: #111111;
+            font-size: 24px;
+        }
+
+        .toggleTransformHide {
+            transform: scale(.6) translateZ(0);
+        }
+
+        .toggleTransformShow {
+            transform: scale(1) translateZ(0);
+        }
+
+        .toggleActive {
+            color: #87cefa;
+            font-weight: bold;
+            border: 1px solid currentColor;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrap">
+    <button class="toggleTransform">hidden</button>
     `awk 'BEGIN{ORS="\n\n"}{print}'`: "为每行添加空格",
+    <div class="transform">
+        <div class="searchBox">
+            <button>color</button>
+            <label>hex to rgb</label>
+            <input type="text" id="hexToRgb"/>
+            <div class="resultBox" id="hexToRgbResultBox"></div>
+        </div>
+        <div class="searchBox">
+            <button>color</button>
+            <label>rgb to hex</label>
+            <input type="text" id="rgbToHex"/>
+            <div class="resultBox" id="rgbToHexResultBox"></div>
+        </div>
+
+        <div id="myDiv1" style="background-color: lightblue;width: 0;height: 20px;line-height: 20px;">0%</div>
+        <div class="separate"></div>
+        <div id="myDiv2" style="background-color: lightgreen;width: 0;height: 20px;line-height: 20px;">0%</div>
+        <button id="btn">run</button>
+    </div>
+
+    <div id="tb"></div>
+</div>
+<script type="text/javascript" src="./handleColor.js"></script>
+<script>
+    function createTable(colorNameArr, colorChineseName, hexColor, rgbArr) {
+        let table = document.createElement("table");
+        table.width = "100%";
+        table.id = 'colorTable';
+
+        let tr, td;
+        for (let i = 0; i < 135; i++) {
+            tr = table.insertRow(table.rows.length);
+            tr.style.marginBottom = "2px";
+            tr.innerHTML = "<td style=\"width: 8%; background:" + hexColor[i] + "\">" + ' ' + "</td>" +
+                "<td>" + colorNameArr[i] + "</td>" + "<td>" + colorChineseName[i] + "</td>" +
+                "<td>" + hexColor[i] + "</td>" + "<td>" + rgbArr[i] + "</td>";
+
+        }
+
+
+        document.querySelector("#tb").appendChild(table);
+    }
+
+    let hexToRgbInput = document.getElementById('hexToRgb');
+    let rgbToHexInput = document.getElementById('rgbToHex');
+
+    let hexToRgbResultBox = document.getElementById('hexToRgbResultBox');
+    let rgbToHexResultBox = document.getElementById('rgbToHexResultBox');
+
+    const toggleTransform = document.getElementsByClassName('toggleTransform')[0];
+    const transform = document.getElementsByClassName("transform")[0];
+
+    const hexToRgbFn = hex => `rgb(${hex.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join()})`;
+    const rgbToHexFn = (r, g, b) => ((r << 16) + (g << 8) + b).toString(16).padStart(6, "0");
+
+    toggleTransform.onclick = (e) => {
+        transform.style.display = transform.style.display === 'none' ? "block" : "none";
+        toggleTransform.innerText = toggleTransform.innerText === "show" ? "hide" : "show";
+        toggleTransform.classList.toggle('toggleTransformHide').toggle('toggleTransformShow');
+        // add(toggleTransform.classList.contains('toggleTransformHide') ? 'toggleTransformShow' : 'toggleTransformHide');
+    }
+
+    hexToRgbInput.onblur = (e) => {
+        let currentValue = e.target.value;
+        hexToRgbResultBox.innerHTML = hexToRgbFn(currentValue)
+        hexToRgbResultBox.style.padding = "20px";
+        hexToRgbResultBox.style.background = currentValue;
+
+        myDiv1.style.background = currentValue;
+    }
+
+    rgbToHexInput.onblur = (e) => {
+        console.log('in e');
+        let currentValue = e.target.value;
+        currentValue = currentValue.replace(/.*\((.*)\).*/, '$1');
+        let [r, g, b] = currentValue.split(',');
+        let resultHex = '#' + rgbToHexFn(r, g, b);
+        console.log(rgbToHexFn(r, g, b));
+        rgbToHexResultBox.innerHTML = resultHex;
+        rgbToHexResultBox.style.padding = "20px";
+        console.log(resultHex);
+        console.log(Object.prototype.toString.call(resultHex));
+        rgbToHexResultBox.style.background = resultHex;
+    }
+
+    createTable(colorNameArr, colorChineseName, hexColor, rgbArr);
+
+    const colorTable = document.getElementById('colorTable');
+    console.log("\n\n*****\n[...colorTable.getElementsByTagName('td')]: ", [...colorTable.getElementsByTagName('td')]);
+    [...colorTable.getElementsByTagName('td')].forEach(v => v.onclick = () => v.classList.toggle('toggleActive'));
+
+    let timer;
+    btn.onclick = function () {
+        myDiv1.style.width = '0';
+        cancelAnimationFrame(timer);
+        timer = requestAnimationFrame(function fn() {
+            if (parseInt(myDiv1.style.width) < 500) {
+                myDiv1.style.width = parseInt(myDiv1.style.width) + 5 + 'px';
+                myDiv1.innerHTML = parseInt(myDiv1.style.width) / 5 + '%';
+                timer = requestAnimationFrame(fn);
+            } else {
+                cancelAnimationFrame(timer);
+            }
+        });
+
+        clearTimeout(timer);
+        myDiv2.style.width = '0';
+        timer = setTimeout(function fn() {
+            if (parseInt(myDiv2.style.width) < 500) {
+                myDiv2.style.width = parseInt(myDiv2.style.width) + 5 + 'px';
+                myDiv2.innerHTML = parseInt(myDiv2.style.width) / 5 + '%';
+                timer = setTimeout(fn, 16);
+            } else {
+                clearTimeout(timer);
+            }
+        }, 16);
+    }
+</script>
+</body>
+
+</html>
