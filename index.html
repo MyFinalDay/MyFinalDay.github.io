@@ -33,6 +33,7 @@
 
         table {
             border-collapse: collapse;
+            font-family: 'Verdana';
         }
 
         tr:hover {
@@ -90,129 +91,128 @@
 
 <body>
 
-<div class="wrap">
-    <button class="toggleTransform">hidden</button>
-    `awk 'BEGIN{ORS="\n\n"}{print}'`: "为每行添加空格",
-    <div class="transform">
-        <div class="searchBox">
-            <button>color</button>
-            <label>hex to rgb</label>
-            <input type="text" id="hexToRgb"/>
-            <div class="resultBox" id="hexToRgbResultBox"></div>
-        </div>
-        <div class="searchBox">
-            <button>color</button>
-            <label>rgb to hex</label>
-            <input type="text" id="rgbToHex"/>
-            <div class="resultBox" id="rgbToHexResultBox"></div>
+    <div class="wrap">
+        <button class="toggleTransform">hidden</button> `awk 'BEGIN{ORS="\n\n"}{print}'`: "为每行添加空格",
+        <div class="transform">
+            <div class="searchBox">
+                <button>color</button>
+                <label>hex to rgb</label>
+                <input type="text" id="hexToRgb" />
+                <div class="resultBox" id="hexToRgbResultBox"></div>
+            </div>
+            <div class="searchBox">
+                <button>color</button>
+                <label>rgb to hex</label>
+                <input type="text" id="rgbToHex" />
+                <div class="resultBox" id="rgbToHexResultBox"></div>
+            </div>
+
+            <div id="myDiv1" style="background-color: lightblue;width: 0;height: 20px;line-height: 20px;">0%</div>
+            <div class="separate"></div>
+            <div id="myDiv2" style="background-color: lightgreen;width: 0;height: 20px;line-height: 20px;">0%</div>
+            <button id="btn">run</button>
         </div>
 
-        <div id="myDiv1" style="background-color: lightblue;width: 0;height: 20px;line-height: 20px;">0%</div>
-        <div class="separate"></div>
-        <div id="myDiv2" style="background-color: lightgreen;width: 0;height: 20px;line-height: 20px;">0%</div>
-        <button id="btn">run</button>
+        <div id="tb"></div>
     </div>
+    <script type="text/javascript" src="./handleColor.js"></script>
+    <script src="./dependence/math.js"></script>
+    <script src="./dependence/lodash.js"></script>
+    <script>
+        function createTable(colorNameArr, colorChineseName, hexColor, rgbArr) {
+            let table = document.createElement("table");
+            table.width = "100%";
+            table.id = 'colorTable';
 
-    <div id="tb"></div>
-</div>
-<script type="text/javascript" src="./handleColor.js"></script>
-<script src="./dependence/math.js"></script>
-<script src="./dependence/lodash.js"></script>
-<script>
-    function createTable(colorNameArr, colorChineseName, hexColor, rgbArr) {
-        let table = document.createElement("table");
-        table.width = "100%";
-        table.id = 'colorTable';
+            let tr, td;
+            for (let i = 0; i < 135; i++) {
+                tr = table.insertRow(table.rows.length);
+                tr.style.marginBottom = "2px";
+                tr.innerHTML = "<td style=\"width: 8%; background:" + hexColor[i] + "\">" + ' ' + "</td>" +
+                    "<td>" + colorNameArr[i] + "</td>" + "<td>" + colorChineseName[i] + "</td>" +
+                    "<td>" + hexColor[i] + "</td>" + "<td>" + rgbArr[i] + "</td>";
 
-        let tr, td;
-        for (let i = 0; i < 135; i++) {
-            tr = table.insertRow(table.rows.length);
-            tr.style.marginBottom = "2px";
-            tr.innerHTML = "<td style=\"width: 8%; background:" + hexColor[i] + "\">" + ' ' + "</td>" +
-                "<td>" + colorNameArr[i] + "</td>" + "<td>" + colorChineseName[i] + "</td>" +
-                "<td>" + hexColor[i] + "</td>" + "<td>" + rgbArr[i] + "</td>";
+            }
 
+
+            document.querySelector("#tb").appendChild(table);
         }
 
+        let hexToRgbInput = document.getElementById('hexToRgb');
+        let rgbToHexInput = document.getElementById('rgbToHex');
 
-        document.querySelector("#tb").appendChild(table);
-    }
+        let hexToRgbResultBox = document.getElementById('hexToRgbResultBox');
+        let rgbToHexResultBox = document.getElementById('rgbToHexResultBox');
 
-    let hexToRgbInput = document.getElementById('hexToRgb');
-    let rgbToHexInput = document.getElementById('rgbToHex');
+        const toggleTransform = document.getElementsByClassName('toggleTransform')[0];
+        const transform = document.getElementsByClassName("transform")[0];
 
-    let hexToRgbResultBox = document.getElementById('hexToRgbResultBox');
-    let rgbToHexResultBox = document.getElementById('rgbToHexResultBox');
+        const hexToRgbFn = hex => `rgb(${hex.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join()})`;
+        const rgbToHexFn = (r, g, b) => ((r << 16) + (g << 8) + b).toString(16).padStart(6, "0");
 
-    const toggleTransform = document.getElementsByClassName('toggleTransform')[0];
-    const transform = document.getElementsByClassName("transform")[0];
+        toggleTransform.onclick = (e) => {
+            transform.style.display = transform.style.display === 'none' ? "block" : "none";
+            toggleTransform.innerText = toggleTransform.innerText === "show" ? "hide" : "show";
+            toggleTransform.classList.toggle('toggleTransformHide').toggle('toggleTransformShow');
+            // add(toggleTransform.classList.contains('toggleTransformHide') ? 'toggleTransformShow' : 'toggleTransformHide');
+        }
 
-    const hexToRgbFn = hex => `rgb(${hex.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join()})`;
-    const rgbToHexFn = (r, g, b) => ((r << 16) + (g << 8) + b).toString(16).padStart(6, "0");
+        hexToRgbInput.onblur = (e) => {
+            let currentValue = e.target.value;
+            hexToRgbResultBox.innerHTML = hexToRgbFn(currentValue)
+            hexToRgbResultBox.style.padding = "20px";
+            hexToRgbResultBox.style.background = currentValue;
 
-    toggleTransform.onclick = (e) => {
-        transform.style.display = transform.style.display === 'none' ? "block" : "none";
-        toggleTransform.innerText = toggleTransform.innerText === "show" ? "hide" : "show";
-        toggleTransform.classList.toggle('toggleTransformHide').toggle('toggleTransformShow');
-        // add(toggleTransform.classList.contains('toggleTransformHide') ? 'toggleTransformShow' : 'toggleTransformHide');
-    }
+            myDiv1.style.background = currentValue;
+        }
 
-    hexToRgbInput.onblur = (e) => {
-        let currentValue = e.target.value;
-        hexToRgbResultBox.innerHTML = hexToRgbFn(currentValue)
-        hexToRgbResultBox.style.padding = "20px";
-        hexToRgbResultBox.style.background = currentValue;
+        rgbToHexInput.onblur = (e) => {
+            console.log('in e');
+            let currentValue = e.target.value;
+            currentValue = currentValue.replace(/.*\((.*)\).*/, '$1');
+            let [r, g, b] = currentValue.split(',');
+            let resultHex = '#' + rgbToHexFn(r, g, b);
+            console.log(rgbToHexFn(r, g, b));
+            rgbToHexResultBox.innerHTML = resultHex;
+            rgbToHexResultBox.style.padding = "20px";
+            console.log(resultHex);
+            console.log(Object.prototype.toString.call(resultHex));
+            rgbToHexResultBox.style.background = resultHex;
+        }
 
-        myDiv1.style.background = currentValue;
-    }
+        createTable(colorNameArr, colorChineseName, hexColor, rgbArr);
 
-    rgbToHexInput.onblur = (e) => {
-        console.log('in e');
-        let currentValue = e.target.value;
-        currentValue = currentValue.replace(/.*\((.*)\).*/, '$1');
-        let [r, g, b] = currentValue.split(',');
-        let resultHex = '#' + rgbToHexFn(r, g, b);
-        console.log(rgbToHexFn(r, g, b));
-        rgbToHexResultBox.innerHTML = resultHex;
-        rgbToHexResultBox.style.padding = "20px";
-        console.log(resultHex);
-        console.log(Object.prototype.toString.call(resultHex));
-        rgbToHexResultBox.style.background = resultHex;
-    }
+        const colorTable = document.getElementById('colorTable');
+        console.log("\n\n*****\n[...colorTable.getElementsByTagName('td')]: ", [...colorTable.getElementsByTagName('td')]);
+        [...colorTable.getElementsByTagName('td')].forEach(v => v.onclick = () => v.classList.toggle('toggleActive'));
 
-    createTable(colorNameArr, colorChineseName, hexColor, rgbArr);
+        let timer;
+        btn.onclick = function() {
+            myDiv1.style.width = '0';
+            cancelAnimationFrame(timer);
+            timer = requestAnimationFrame(function fn() {
+                if (parseInt(myDiv1.style.width) < 500) {
+                    myDiv1.style.width = parseInt(myDiv1.style.width) + 5 + 'px';
+                    myDiv1.innerHTML = parseInt(myDiv1.style.width) / 5 + '%';
+                    timer = requestAnimationFrame(fn);
+                } else {
+                    cancelAnimationFrame(timer);
+                }
+            });
 
-    const colorTable = document.getElementById('colorTable');
-    console.log("\n\n*****\n[...colorTable.getElementsByTagName('td')]: ", [...colorTable.getElementsByTagName('td')]);
-    [...colorTable.getElementsByTagName('td')].forEach(v => v.onclick = () => v.classList.toggle('toggleActive'));
-
-    let timer;
-    btn.onclick = function () {
-        myDiv1.style.width = '0';
-        cancelAnimationFrame(timer);
-        timer = requestAnimationFrame(function fn() {
-            if (parseInt(myDiv1.style.width) < 500) {
-                myDiv1.style.width = parseInt(myDiv1.style.width) + 5 + 'px';
-                myDiv1.innerHTML = parseInt(myDiv1.style.width) / 5 + '%';
-                timer = requestAnimationFrame(fn);
-            } else {
-                cancelAnimationFrame(timer);
-            }
-        });
-
-        clearTimeout(timer);
-        myDiv2.style.width = '0';
-        timer = setTimeout(function fn() {
-            if (parseInt(myDiv2.style.width) < 500) {
-                myDiv2.style.width = parseInt(myDiv2.style.width) + 5 + 'px';
-                myDiv2.innerHTML = parseInt(myDiv2.style.width) / 5 + '%';
-                timer = setTimeout(fn, 16);
-            } else {
-                clearTimeout(timer);
-            }
-        }, 16);
-    }
-</script>
+            clearTimeout(timer);
+            myDiv2.style.width = '0';
+            timer = setTimeout(function fn() {
+                if (parseInt(myDiv2.style.width) < 500) {
+                    myDiv2.style.width = parseInt(myDiv2.style.width) + 5 + 'px';
+                    myDiv2.innerHTML = parseInt(myDiv2.style.width) / 5 + '%';
+                    timer = setTimeout(fn, 16);
+                } else {
+                    clearTimeout(timer);
+                }
+            }, 16);
+        }
+    </script>
 </body>
 
 </html>
