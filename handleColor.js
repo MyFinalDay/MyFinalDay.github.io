@@ -418,9 +418,9 @@ const {
     values,
 } = Object;
 
-c("colorNameArr.length: ", colorNameArr.length);
-c("colorChineseName.length: ", colorChineseName.length);
-c("hexColor.length: ", hexColor.length);
+// c("colorNameArr.length: ", colorNameArr.length);
+// c("colorChineseName.length: ", colorChineseName.length);
+// c("hexColor.length: ", hexColor.length);
 
 const zip = (a, b) => {
     let res = [];
@@ -432,16 +432,16 @@ const zip = (a, b) => {
     return res;
 }
 
-c("zip(colorNameArr, colorChineseName): ", zip(colorNameArr, colorChineseName));
-c("zip(colorNameArr, hexColor): ", zip(colorNameArr, hexColor));
+// c("zip(colorNameArr, colorChineseName): ", zip(colorNameArr, colorChineseName));
+// c("zip(colorNameArr, hexColor): ", zip(colorNameArr, hexColor));
 
 const HEX_COLOR_MAP = zip(colorNameArr, hexColor);
 
-c("HEX_COLOR_MAP.filter(v => keys(v) === 'White'): ", HEX_COLOR_MAP.filter(v => keys(v)[0] === 'White'));
+// c("HEX_COLOR_MAP.filter(v => keys(v) === 'White'): ", HEX_COLOR_MAP.filter(v => keys(v)[0] === 'White'));
 const getHexColorByColorName = name => HEX_COLOR_MAP.filter(v => (new RegExp(name, 'i')).test(keys(v)[0]));
 
-c("getHexColorByColorName('White'): ", getHexColorByColorName('White'));
-c("getHexColorByColorName('white'): ", getHexColorByColorName('whit'));
+// c("getHexColorByColorName('White'): ", getHexColorByColorName('White'));
+// c("getHexColorByColorName('white'): ", getHexColorByColorName('whit'));
 
 let rgbArr = [
     "255,192,203",
@@ -583,6 +583,6 @@ let rgbArr = [
 
 const RGB_COLOR_MAP = zip(colorNameArr, rgbArr);
 const getRgbColorByColorName = name => RGB_COLOR_MAP.filter(v => (new RegExp(name, 'i')).test(keys(v)[0]));
-c("rgbArr.length: ", rgbArr.length);
-c("getRgbColorByColorName('white'): ", getRgbColorByColorName('whit'));
-c("getHexColorByColorName('Blue'): ", getHexColorByColorName('Blue'));
+// c("rgbArr.length: ", rgbArr.length);
+// c("getRgbColorByColorName('white'): ", getRgbColorByColorName('whit'));
+// c("getHexColorByColorName('Blue'): ", getHexColorByColorName('Blue'));

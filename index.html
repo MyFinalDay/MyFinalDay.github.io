@@ -140,6 +140,7 @@
 <script src="./dependence/math.js"></script>
 <script src="./dependence/lodash.js"></script>
 <script>
+    console.time('all');
     function createTable(colorNameArr, colorChineseName, hexColor, rgbArr) {
         let table = document.createElement("table");
         table.width = "100%";
@@ -229,7 +230,7 @@
                 clearTimeout(timer);
             }
         }, 16);
-    }
+    };
     let cLeft = document.getElementById('cLeft'), cCenter = document.getElementById('cCenter'),
         cRight = document.getElementById('cRight');
     let currentAnimationTime = 0;
@@ -244,6 +245,7 @@
         requestAnimationFrame(animate);
     }
 
+    console.timeEnd('all');
 </script>
 </body>
 
